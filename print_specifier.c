@@ -4,9 +4,10 @@
  * print_c - print char
  * @ap: argument list
  * @flag: flag for some functions not used here
+ * @prec: precision
  * Return: number of character printed
  */
-int print_c(va_list ap, int flag)
+int print_c(va_list ap, int flag, __attribute__((unused)) int prec)
 {
 	char c;
 
@@ -21,9 +22,10 @@ int print_c(va_list ap, int flag)
  * print_s - print string
  * @ap: argument list
  * @flag: flag for some functions not used here
+ * @prec: precision
  * Return: number of characters printed
  */
-int print_s(va_list ap, int flag)
+int print_s(va_list ap, int flag, __attribute__((unused)) int prec)
 {
 	int i = 0, count = 0;
 	char *s = va_arg(ap, char *);
@@ -49,25 +51,27 @@ int print_s(va_list ap, int flag)
  * print_int - call print_num function to print integer
  * @ap: argument list
  * @flag: tells if it is %i or %d or %b specifier
+ * @prec: precision
  * Return: number of characters printed
  */
-int print_int(va_list ap, int flag)
+int print_int(va_list ap, int flag, int prec)
 {
 	int num = va_arg(ap, int), base = 10;
 
 	if (flag == 4)
 		base = 2;
 
-	return (print_num(num, base));
+	return (print_num(num, base, prec));
 }
 
 /**
  * print_unsigned_int - call print_num function to print integer
  * @ap: argument list
  * @flag: tells if it is %i or %d or %b specifier
+ * @prec: precision
  * Return: number of characters printed
  */
-int print_unsigned_int(va_list ap, int flag)
+int print_unsigned_int(va_list ap, int flag, int prec)
 {
 	unsigned int num = va_arg(ap, unsigned int);
 	int base = 10;
@@ -81,23 +85,29 @@ int print_unsigned_int(va_list ap, int flag)
 			small = false;
 		base = 16;
 	}
-	return (print_positive_num(num, base, small));
+	return (print_positive_num(num, base, small, prec));
 }
 
 /**
  * print_num - print numbers
  * @n: number to be printed
  * @base: base of the number to be printed
+ * @prec: precision
  * Return: number of characters printed
  */
-int print_num(int n, int base)
+int print_num(int n, int base, int prec)
 {
-	int num_chars = 0;
+	int num_chars = 0, len = num_len(n, base);
 
+	while (prec > len)
+	{
+		_putchar('0');
+		prec--;
+	}
 	if (base == 2)
 	{
 		if (n > 1)
-			num_chars += print_num(n / base, base);
+			num_chars += print_num(n / base, base, 0);
 		num_chars += _putchar('0' + n % base);
 	}
 	else
@@ -109,7 +119,7 @@ int print_num(int n, int base)
 			num_chars++;
 		}
 		if (n > 9)
-			num_chars += print_num(n / base, base);
+			num_chars += print_num(n / base, base, 0);
 		num_chars += _putchar('0' + n % base);
 	}
 	return (num_chars);
